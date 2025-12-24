@@ -1,3 +1,8 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# In-project GTA directory for testing
+gta/*
+!gta/.gdignore
+!gta/README.md

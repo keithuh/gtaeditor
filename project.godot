@@ -11,5 +11,12 @@ config_version=5
 [application]
 
 config/name="gtaeditor"
+run/main_scene="uid://c6bj14svio2ir"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*res://scripts/game_manager.gd"
+MapBuilder="*res://scripts/map_builder.gd"
+AssetLoader="*res://scripts/asset_loader.gd"
