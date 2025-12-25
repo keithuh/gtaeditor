@@ -155,33 +155,70 @@ func _load_dxt1() -> Image:
 	var data_size := _file.get_32()
 	var compressed_data := _file.get_buffer(data_size)
 	
-	# FIX: validate if data_size includes mipmaps or just the base level
-	# DXT1 is 4 bits per pixel i think
-	var expected_base_size = int(width * height * 0.5)
+	# dxt1 uses 64 bits (8 bytes) per 4x4 block = 0.5 bytes per pixel
+	var block_width = (width + 3) / 4
+	var block_height = (height + 3) / 4
+	var expected_base_size = block_width * block_height * 8
+	
 	var use_mipmaps = num_levels > 1
 	
 	# if the data provided only fits the base image, disable mipmaps to avoid crash
-	if data_size == expected_base_size:
+	if data_size <= expected_base_size:
 		use_mipmaps = false
 
-	return Image.create_from_data(
+	# create dxt1 image first
+	var img = Image.create_from_data(
 		width, 
 		height, 
 		use_mipmaps, 
 		Image.FORMAT_DXT1,
 		compressed_data
 	)
+	
+	# if this texture has alpha, decompress it
+	# dxt1 with alpha needs to be decompressed because godot dxt1 doesn't support alpha channel
+	if has_alpha:
+		img.decompress()
+	
+	return img
 
 func _load_dxt3() -> Image:
 	var data_size := _file.get_32()
 	var compressed_data := _file.get_buffer(data_size)
 	
-	# FIX: validate data size for DXT3 as well
-	# DXT3 is 8 bits per pixel
-	var expected_base_size = int(width * height * 1.0)
+	# dxt3 uses 128 bits (16 bytes) per 4x4 block = 1 byte per pixel
+	var block_width = (width + 3) / 4
+	var block_height = (height + 3) / 4
+	var expected_dxt3_size = block_width * block_height * 16
+	var expected_dxt1_size = block_width * block_height * 8
+	
 	var use_mipmaps = num_levels > 1
 	
-	if data_size == expected_base_size:
+	# FIX: some files mark compression as dxt3 but contain dxt1 data
+	# check actual data size to determine the correct format
+	if data_size == expected_dxt1_size or data_size < expected_dxt3_size:
+		# data size matches dxt1, not dxt3
+		print("Warning: Texture '%s' marked as DXT3 but data size matches DXT1. Alpha: %s" % [name, has_alpha])
+		if data_size <= expected_dxt1_size:
+			use_mipmaps = false
+		
+		# create dxt1 image
+		var img = Image.create_from_data(
+			width,
+			height,
+			use_mipmaps,
+			Image.FORMAT_DXT1,
+			compressed_data
+		)
+		
+		# if this texture has alpha, decompress it to expose the alpha channel
+		if has_alpha:
+			img.decompress()
+		
+		return img
+	
+	# actual dxt3 data
+	if data_size <= expected_dxt3_size:
 		use_mipmaps = false
 
 	return Image.create_from_data(

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bv310bobncs2x"]
+[gd_scene load_steps=18 format=3 uid="uid://bv310bobncs2x"]
 
 [ext_resource type="Script" uid="uid://w5dkshronp2r" path="res://scripts/map_builder.gd" id="1_paxxb"]
 [ext_resource type="Script" uid="uid://br6b4uik4d7ds" path="res://prefabs/fly/fly.gd" id="2_paxxb"]
@@ -12,6 +12,8 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="10_6k6j1"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="11_m335s"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="12_sq6bu"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wslke"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4b7dj"]
 shader = ExtResource("3_wslke")
@@ -64,8 +66,8 @@ shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_intensity = 10.0
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.7472498, 0.7472498)
-shader_parameter/cirrus_position2 = Vector2(0.7472498, 0.7472498)
+shader_parameter/cirrus_position1 = Vector2(0.5414435, 0.5414435)
+shader_parameter/cirrus_position2 = Vector2(0.5414435, 0.5414435)
 shader_parameter/cirrus_day_color = Color(0.824, 0.875, 1, 1)
 shader_parameter/cirrus_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
 shader_parameter/cirrus_night_color = Color(0.09, 0.094, 0.129, 1)
@@ -78,7 +80,7 @@ shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_intensity = 0.6
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(48.89624, 48.89624)
+shader_parameter/cumulus_position = Vector2(32.803543, 32.803543)
 shader_parameter/cumulus_texture = ExtResource("5_n1psn")
 shader_parameter/cumulus_day_color = Color(0.823529, 0.87451, 1, 1)
 shader_parameter/cumulus_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
@@ -116,6 +118,9 @@ script = ExtResource("1_paxxb")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2495.3655, 21.998528, 1669.6431)
 script = ExtResource("2_paxxb")
 metadata/_custom_type_script = "uid://br6b4uik4d7ds"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FlyCamera"]
+shape = SubResource("BoxShape3D_wslke")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2495.3655, 24.37539, 1669.6431)

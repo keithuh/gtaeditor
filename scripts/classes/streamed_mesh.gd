@@ -27,12 +27,14 @@ func _process(delta: float) -> void:
 
 func _load_mesh() -> void:
 	AssetLoader.mutex.lock()
+	
 	if _idef.flags & 0x40:
+		AssetLoader.mutex.unlock()
 		return
+		
 	var access := AssetLoader.open_asset(_idef.model_name + ".dff")
 	
 	if access == null:
-		printerr("ERROR: couldn't load model: ", _idef.model_name + ".dff")
 		AssetLoader.mutex.unlock()
 		return
 		
@@ -47,16 +49,41 @@ func _load_mesh() -> void:
 		_mesh_buf = geometry.mesh
 		for surf_id in _mesh_buf.get_surface_count():
 			var material := _mesh_buf.surface_get_material(surf_id) as StandardMaterial3D
+			
 			material.cull_mode = BaseMaterial3D.CULL_DISABLED
+			var is_material_transparent = material.albedo_color.a < 0.95
+
 			if _idef.flags & 0x08:
 				material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 				material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+				# additive materials generally shouldn't write depth
+				material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+				
 			if material.has_meta("texture_name"):
 				var txd := RWTextureDict.new(AssetLoader.open_asset(_idef.txd_name + ".txd"))
 				var texture_name = material.get_meta("texture_name")
 				for raster in txd.textures:
 					if texture_name.matchn(raster.name):
-						material.albedo_texture = ImageTexture.create_from_image(raster.image)
+						if raster.image != null and not raster.image.is_empty():
+							var img := raster.image
+							material.albedo_texture = ImageTexture.create_from_image(img)
+							material.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+							material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY
+							
+							if is_material_transparent:
+								material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+								material.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
+								
+							else:
+								# we scan the image because raster.has_alpha is unreliable
+								var alpha_mode := img.detect_alpha()
+								
+								if alpha_mode != Image.ALPHA_NONE:
+									# scissor casts shadows
+									material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+									material.alpha_scissor_threshold = 0.5
+						else:
+							push_warning("Empty image for: %s" % texture_name)
 						break
 			_mesh_buf.surface_set_material(surf_id, material)
 	AssetLoader.mutex.unlock()
