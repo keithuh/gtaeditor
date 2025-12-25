@@ -30,7 +30,19 @@ func _load_mesh() -> void:
 	if _idef.flags & 0x40:
 		return
 	var access := AssetLoader.open_asset(_idef.model_name + ".dff")
-	var glist := RWClump.new(access).geometry_list
+	
+	if access == null:
+		printerr("ERROR: couldn't load model: ", _idef.model_name + ".dff")
+		AssetLoader.mutex.unlock()
+		return
+		
+	var clump := RWClump.new(access)
+	if not clump.is_valid:
+		printerr("Failed to load Clump for: ", _idef.model_name)
+		AssetLoader.mutex.unlock()
+		return
+		
+	var glist := clump.geometry_list
 	for geometry in glist.geometries:
 		_mesh_buf = geometry.mesh
 		for surf_id in _mesh_buf.get_surface_count():

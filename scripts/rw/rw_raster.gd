@@ -155,24 +155,39 @@ func _load_dxt1() -> Image:
 	var data_size := _file.get_32()
 	var compressed_data := _file.get_buffer(data_size)
 	
-	# godot supports dxt1, thanks godot!!!
+	# FIX: validate if data_size includes mipmaps or just the base level
+	# DXT1 is 4 bits per pixel i think
+	var expected_base_size = int(width * height * 0.5)
+	var use_mipmaps = num_levels > 1
+	
+	# if the data provided only fits the base image, disable mipmaps to avoid crash
+	if data_size == expected_base_size:
+		use_mipmaps = false
+
 	return Image.create_from_data(
 		width, 
 		height, 
-		num_levels > 1,
+		use_mipmaps, 
 		Image.FORMAT_DXT1,
 		compressed_data
 	)
 
 func _load_dxt3() -> Image:
 	var data_size := _file.get_32()
-	# godot supports dxt3, again, thanks godot!
 	var compressed_data := _file.get_buffer(data_size)
+	
+	# FIX: validate data size for DXT3 as well
+	# DXT3 is 8 bits per pixel
+	var expected_base_size = int(width * height * 1.0)
+	var use_mipmaps = num_levels > 1
+	
+	if data_size == expected_base_size:
+		use_mipmaps = false
 
 	return Image.create_from_data(
 		width,
 		height,
-		num_levels > 1,
+		use_mipmaps,
 		Image.FORMAT_DXT3,
 		compressed_data
 	)

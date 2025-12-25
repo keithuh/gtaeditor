@@ -7,7 +7,7 @@ var collisions: Array[ColFile]
 var map: Node3D
 var _loaded := false
 
-var streaming_distance := 300.0
+var streaming_distance := 600.0
 var active_instances: Dictionary[ItemPlacement, Node3D] = {}
 var camera: Camera3D
 
@@ -207,7 +207,8 @@ func spawn(id: int, model_name: String, position: Vector3, scale: Vector3, rotat
 	instance.position = position
 	instance.scale = scale
 	instance.quaternion = rotation
-	instance.visibility_range_end = item.render_distance
+	#instance.visibility_range_end = item.render_distance
+	instance.visibility_range_end = streaming_distance
 	for child in item.childs:
 		if child is TDFXLight:
 			var light := OmniLight3D.new()
