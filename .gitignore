@@ -6,3 +6,5 @@
 gta/*
 !gta/.gdignore
 !gta/README.md
+
+addons/

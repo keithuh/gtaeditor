@@ -18,5 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameManager="*res://scripts/game_manager.gd"
-MapBuilder="*res://scripts/map_builder.gd"
 AssetLoader="*res://scripts/asset_loader.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/sky_3d/plugin.cfg")

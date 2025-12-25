@@ -27,10 +27,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.756, 1.581, 22.184)
 script = ExtResource("1_bl13t")
 metadata/_custom_type_script = "uid://br6b4uik4d7ds"
 
-[node name="Model" type="Node3D" parent="."]
+[node name="cj" type="Node3D" parent="."]
 script = ExtResource("2_iyx0m")
 
-[node name="Model2" type="Node3D" parent="."]
+[node name="tree" type="Node3D" parent="."]
 script = ExtResource("2_iyx0m")
 model_name = "veg_bevtree2"
 txd_name = "gta_tree_boak"

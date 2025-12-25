@@ -63,7 +63,7 @@ func load_object() -> void:
 				
 				if material.has_meta("texture_name") and txd != null:
 					var texture_name = material.get_meta("texture_name")
-					print("Buscando textura: %s" % texture_name)
+					print("searching texture: %s" % texture_name)
 					
 					for raster in txd.textures:
 						if texture_name.matchn(raster.name):
