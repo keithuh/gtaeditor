@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bv310bobncs2x"]
+[gd_scene load_steps=24 format=3 uid="uid://bv310bobncs2x"]
 
 [ext_resource type="Script" uid="uid://w5dkshronp2r" path="res://scripts/map_builder.gd" id="1_paxxb"]
 [ext_resource type="Script" uid="uid://br6b4uik4d7ds" path="res://prefabs/fly/fly.gd" id="2_paxxb"]
@@ -12,8 +12,10 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="10_6k6j1"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="11_m335s"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="12_sq6bu"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_wslke"]
+[ext_resource type="Script" uid="uid://h580nry2aua6" path="res://prefabs/ocean/ocean.gd" id="13_c00ee"]
+[ext_resource type="Script" uid="uid://ohgsyp3emk0h" path="res://addons/tessarakkt.oceanfft/components/QuadTree3D.gd" id="13_n1psn"]
+[ext_resource type="Material" uid="uid://cmyo0unntq078" path="res://addons/tessarakkt.oceanfft/Ocean.tres" id="14_c00ee"]
+[ext_resource type="Script" uid="uid://cx3twtm5gessr" path="res://addons/tessarakkt.oceanfft/components/Ocean3D.gd" id="14_n1psn"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4b7dj"]
 shader = ExtResource("3_wslke")
@@ -66,8 +68,8 @@ shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_intensity = 10.0
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.5414435, 0.5414435)
-shader_parameter/cirrus_position2 = Vector2(0.5414435, 0.5414435)
+shader_parameter/cirrus_position1 = Vector2(0.02316795, 0.02316795)
+shader_parameter/cirrus_position2 = Vector2(0.02316795, 0.02316795)
 shader_parameter/cirrus_day_color = Color(0.824, 0.875, 1, 1)
 shader_parameter/cirrus_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
 shader_parameter/cirrus_night_color = Color(0.09, 0.094, 0.129, 1)
@@ -80,7 +82,7 @@ shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_intensity = 0.6
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(32.803543, 32.803543)
+shader_parameter/cumulus_position = Vector2(10.124721, 10.124721)
 shader_parameter/cumulus_texture = ExtResource("5_n1psn")
 shader_parameter/cumulus_day_color = Color(0.823529, 0.87451, 1, 1)
 shader_parameter/cumulus_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
@@ -109,6 +111,28 @@ tonemap_white = 6.0
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_5u2yt"]
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_p7tei"]
+noise_type = 3
+fractal_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nuoa6"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_p7tei")
+seamless = true
+
+[sub_resource type="Resource" id="Resource_c70he"]
+script = ExtResource("14_n1psn")
+simulation_frameskip = 1
+fft_resolution = 128
+horizontal_dimension = 512
+time_scale = 1.1
+cascade_scales = Array[float]([3.23607, 1.61803, 0.5])
+amplitude_scale_max = 0.32
+domain_warp_texture = SubResource("NoiseTexture2D_nuoa6")
+choppiness = 0.5
+wave_scroll_speed = -0.003
+
 [node name="Map" type="Node3D"]
 
 [node name="Map" type="Node3D" parent="."]
@@ -119,9 +143,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2495.3655, 21.998528, 1669.64
 script = ExtResource("2_paxxb")
 metadata/_custom_type_script = "uid://br6b4uik4d7ds"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="FlyCamera"]
-shape = SubResource("BoxShape3D_wslke")
-
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2495.3655, 24.37539, 1669.6431)
 
@@ -129,6 +150,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2495.3655, 24.37539, 1669.643
 environment = SubResource("Environment_y2ir2")
 camera_attributes = SubResource("CameraAttributesPractical_5u2yt")
 script = ExtResource("10_6k6j1")
+fog_enabled = false
 editor_time_enabled = false
 game_time_enabled = false
 current_time = 12.0
@@ -150,6 +172,7 @@ sun_azimuth = -3.199437
 sun_altitude = -0.683288
 moon_azimuth = -6.043023
 moon_altitude = -2.376308
+fog_visible = false
 wind_direction = 2.35619451204804
 
 [node name="TimeOfDay" type="Node" parent="Sky3D"]
@@ -158,3 +181,16 @@ editor_time_enabled = false
 game_time_enabled = false
 dome_path = NodePath("../SkyDome")
 current_time = 12.0
+
+[node name="Ocean" type="Node" parent="."]
+script = ExtResource("13_c00ee")
+ocean = SubResource("Resource_c70he")
+metadata/_custom_type_script = "uid://h580nry2aua6"
+
+[node name="QuadTree3D" type="Node3D" parent="Ocean"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -11.15, 0)
+script = ExtResource("13_n1psn")
+lod_level = 7
+quad_size = 32768.0
+ranges = Array[float]([250.0, 500.0, 1900.0, 3800.0, 7600.0, 15200.0, 30400.0, 60800.0])
+material = ExtResource("14_c00ee")
