@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://brou6vy6uhsbq"]
+
+[ext_resource type="Script" uid="uid://br6b4uik4d7ds" path="res://prefabs/fly/fly.gd" id="4_5qbqa"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3dx25"]
+sky_top_color = Color(0, 0.13333334, 0.28627452, 1)
+sky_horizon_color = Color(0.4627451, 0.63529414, 1, 1)
+
+[sub_resource type="Sky" id="Sky_nuoa6"]
+sky_material = SubResource("ProceduralSkyMaterial_3dx25")
+
+[sub_resource type="Environment" id="Environment_kri1i"]
+background_mode = 2
+sky = SubResource("Sky_nuoa6")
+
+[node name="Testing" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_kri1i")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+shadow_enabled = true
+
+[node name="FlyCamera" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.756, 1.581, 22.184)
+script = ExtResource("4_5qbqa")
+metadata/_custom_type_script = "uid://br6b4uik4d7ds"
